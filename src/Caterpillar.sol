@@ -2,21 +2,13 @@
 pragma solidity ^0.8.20;
 
 import {ERC721Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
-import {ERC721EnumerableUpgradeable} from
-    "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721EnumerableUpgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
-contract Caterpillar is
-    Initializable,
-    ERC721Upgradeable,
-    ERC721EnumerableUpgradeable,
-    OwnableUpgradeable,
-    UUPSUpgradeable
-{
+contract Caterpillar is Initializable, ERC721Upgradeable, OwnableUpgradeable, UUPSUpgradeable {
     /// >------> errors
     error Caterpillar__NoMoreCaterpillars();
     error Caterpillar__OnlyOneCaterpillarPerWallet();
@@ -55,33 +47,32 @@ contract Caterpillar is
         _disableInitializers();
     }
 
-    /// >------> external functions
-    function mintNft() external hasNotMinted(msg.sender) caterpillarsStillAvailable returns (string memory) {
-        s_nftCounter++;
-        uint256 nftId = s_nftCounter;
-
-        s_nextNftId++;
-        s_hasMinted[msg.sender] = true;
-        s_minters.push(msg.sender);
-
-        _safeMint(msg.sender, nftId);
-
-        emit CaterpillarMinted(msg.sender, nftId);
-
-        return string(abi.encodePacked("There are ", Strings.toString(s_nftCounter), "Caterpillar NFTs remaining!"));
-    }
-
-    /// >------> public functions
+    /// >------> initializer function
     function initialize(string memory caterpillarSvgImageUri) public initializer {
-        __ERC721_init("Caterpillar", "CNFT");
-        __ERC721Enumerable_init();
+        __ERC721_init("Caterpillar NFT", "CNFT");
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
         s_caterpillarSvgImageUri = caterpillarSvgImageUri;
         s_nftCounter = 0;
         s_maxSupply = 5;
-        s_nextNftId = 1;
     }
+
+    /// >------> external functions
+    function mintNft() external hasNotMinted(msg.sender) caterpillarsStillAvailable returns (string memory) {
+        uint256 nftCounter = s_nftCounter;
+
+        s_hasMinted[msg.sender] = true;
+        s_minters.push(msg.sender);
+        s_nftCounter++;
+
+        _safeMint(msg.sender, nftCounter);
+
+        emit CaterpillarMinted(msg.sender, nftCounter);
+
+        return string(abi.encodePacked("There are ", Strings.toString(s_nftCounter), "Caterpillar NFTs remaining!"));
+    }
+
+    /// >------> public functions
 
     function nftURI(uint256 nftId) public view virtual returns (string memory) {
         if (ownerOf(nftId) == address(0)) {
@@ -121,6 +112,10 @@ contract Caterpillar is
         return s_nftCounter;
     }
 
+    function getMaxSupply() external view returns (uint256) {
+        return s_maxSupply;
+    }
+
     function mintStatus(address toVerify) external view returns (bool) {
         if (s_hasMinted[toVerify]) {
             return true;
@@ -139,31 +134,5 @@ contract Caterpillar is
 
     function getCaterpillarSvg() external view returns (string memory) {
         return s_caterpillarSvgImageUri;
-    }
-
-    // The following functions are overrides required by Solidity.
-
-    function _update(address to, uint256 tokenId, address auth)
-        internal
-        override(ERC721Upgradeable, ERC721EnumerableUpgradeable)
-        returns (address)
-    {
-        return super._update(to, tokenId, auth);
-    }
-
-    function _increaseBalance(address account, uint128 value)
-        internal
-        override(ERC721Upgradeable, ERC721EnumerableUpgradeable)
-    {
-        super._increaseBalance(account, value);
-    }
-
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC721Upgradeable, ERC721EnumerableUpgradeable)
-        returns (bool)
-    {
-        return super.supportsInterface(interfaceId);
     }
 }
