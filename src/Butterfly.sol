@@ -79,7 +79,7 @@ contract Butterfly is
         __UUPSUpgradeable_init();
         s_butterflySvgImageUri = butterflySvgImageUri;
         s_nftCounter = 0;
-        s_maxSupply = 5;
+        s_maxSupply = 10;
         s_nextNftId = 1;
     }
 
