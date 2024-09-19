@@ -135,4 +135,19 @@ contract DeployAndUpgradeTest is StdCheats, Test {
         vm.expectRevert(Caterpillar.Caterpillar__NoMoreCaterpillars.selector);
         Caterpillar(proxyAddress).mintNft();
     }
+
+    /// >------> Butterfly Tests
+    function testUpgradeWorks() public {
+        address proxyAddress = deployCaterpillar.deployCaterpillar();
+        Butterfly butterfly = new Butterfly();
+
+        vm.prank(Caterpillar(proxyAddress).owner());
+        Caterpillar(proxyAddress).transferOwnership(msg.sender);
+
+        address proxy = upgradeCaterpillar.upgradeCaterpillarToButterfly(proxyAddress, address(butterfly));
+
+        uint256 expectedMaxSupply = 10;
+        console2.log(Butterfly(proxy).getMaxSupply());
+        assert(expectedMaxSupply == Butterfly(proxy).getMaxSupply());
+    } /// @note this test is currently failing
 }
