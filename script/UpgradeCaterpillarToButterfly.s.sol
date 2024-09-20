@@ -25,7 +25,9 @@ contract UpgradeCaterpillarToButterfly is Script {
     function upgradeCaterpillarToButterfly(address proxyAddress, address butterfly) public returns (address) {
         vm.startBroadcast();
         Caterpillar proxy = Caterpillar(payable(proxyAddress));
-        Butterfly(address(proxy)).initialize(upgradeURI); /// @note This line is making all tests for Butterfly to fail. But, I need a way to initialize the Butterfly contract
+        // Butterfly(address(proxy)).initialize(upgradeURI); /// @note This line is making all tests for Butterfly to fail. But, I need a way to initialize the Butterfly contract
+        // bytes memory data = abi.encodeWithSelector(Butterfly.initialize.selector, "upgradeURI");
+        // proxy.upgradeToAndCall(address(butterfly), data);
         proxy.upgradeToAndCall(address(butterfly), "");
         vm.stopBroadcast();
         return address(proxy);

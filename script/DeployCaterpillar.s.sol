@@ -8,7 +8,7 @@ import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.s
 
 contract DeployCaterpillar is Script {
     string caterpillarSvg = vm.readFile("./img/caterpillar.svg");
-    string realURI = svgToImageURI(caterpillarSvg);
+    string caterpillarURI = svgToImageURI(caterpillarSvg);
 
     function run() external returns (address) {
         address proxy = deployCaterpillar();
@@ -19,7 +19,7 @@ contract DeployCaterpillar is Script {
         vm.startBroadcast();
         Caterpillar caterpillar = new Caterpillar();
         ERC1967Proxy proxy = new ERC1967Proxy(address(caterpillar), "");
-        Caterpillar(address(proxy)).initialize(realURI);
+        Caterpillar(address(proxy)).initialize(caterpillarURI);
         vm.stopBroadcast();
 
         return address(proxy);

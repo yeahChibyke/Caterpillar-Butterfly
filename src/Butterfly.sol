@@ -88,7 +88,7 @@ contract Butterfly is Initializable, ERC721Upgradeable, OwnableUpgradeable, UUPS
                         abi.encodePacked(
                             '{"name":"',
                             name(), // You can add whatever name here
-                            '", "description":"Butterfly NFT, 100% on Chain!", ',
+                            '", "description":" Caterpillar_Butterfly NFT, 100% on Chain!", ',
                             '"attributes": [{"trait_type": "personality", "value": 100}], "image":"',
                             imageURI,
                             '"}'

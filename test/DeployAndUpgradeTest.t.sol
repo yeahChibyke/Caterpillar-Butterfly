@@ -57,7 +57,7 @@ contract DeployAndUpgradeTest is StdCheats, Test {
 
         vm.prank(Alice);
         Caterpillar(proxyAddress).mintNft();
-        console2.log(Caterpillar(proxyAddress).nftURI(0));
+        // console2.log(Caterpillar(proxyAddress).nftURI(0));
 
         assert(Caterpillar(proxyAddress).balanceOf(Alice) == 1);
         assert(Caterpillar(proxyAddress).ownerOf(0) == Alice);
@@ -149,5 +149,6 @@ contract DeployAndUpgradeTest is StdCheats, Test {
         uint256 expectedMaxSupply = 10;
         console2.log(Butterfly(proxy).getMaxSupply());
         assert(expectedMaxSupply == Butterfly(proxy).getMaxSupply());
-    } /// @note this test is currently failing
+    }
+    /// @note this test is currently failing. Something is wrong with the initialization from the scripts (i guess)
 }
